@@ -101,44 +101,45 @@ class ProviderChatXai(Provider):
            },
        }
 
-    # def format_thinking_content(self, content: list[dict[str, str]], mode: str = ""):
-    #     output = ""
-    #     for part in content:
-    #         if 'thinking' in part:
-    #             if mode != "thinking":
-    #                 mode = "thinking"
-    #                 output += "[THINKING]\n\n"
-    #             output += part['thinking']
-    #         elif 'text' in part:
-    #             if mode != "text":
-    #                 mode = "text"
-    #                 output += "\n\n[ANSWER]\n\n"
-    #             output += part['text']
-    #     return output
-    #
-    # def handle_non_streaming_response(self, response: AIMessage):
-    #     if isinstance(response.content, list):
-    #         response.content = self.format_thinking_content(response.content)
-    #     return response
-    #
-    # def handle_streaming_chunk(self, chunk: AIMessageChunk | str, previous_chunks: list[AIMessageChunk | str]) -> str:
-    #     if isinstance(chunk, str):
-    #         return chunk
-    #     elif isinstance(chunk.content, str):
-    #         return chunk.content
-    #     return self.handle_streaming_thinking_chunk(chunk, previous_chunks)
-    #
-    # def get_last_streaming_mode(self, previous_chunks: list[AIMessageChunk | str]) -> str:
-    #     for chunk in reversed(previous_chunks):
-    #         if isinstance(chunk, AIMessageChunk):
-    #             content = chunk.content
-    #             if isinstance(content, list):
-    #                 for part in reversed(content):
-    #                     if part['type'] in ['thinking', 'text']:
-    #                         return part['type']
-    #     return ""
-    #
-    # def handle_streaming_thinking_chunk(self, chunk: AIMessageChunk, previous_chunks: list[AIMessageChunk | str]) -> str:
-    #     mode = self.get_last_streaming_mode(previous_chunks)
-    #     output = self.format_thinking_content(chunk.content, mode)
-    #     return output
+    def format_streaming_chunk(self, chunk: AIMessageChunk, mode: str = ""):
+        output = ""
+        if 'reasoning_content' in chunk.additional_kwargs:
+            if mode != "thinking":
+                output += "[THINKING]\n\n"
+            output += chunk.additional_kwargs['reasoning_content']
+        else:
+            if mode != "text":
+                output += "\n\n[ANSWER]\n\n"
+            output += chunk.content
+        return output
+
+    def handle_non_streaming_response(self, response: AIMessage):
+        content = ""
+        if 'reasoning_content' in response.additional_kwargs:
+            content = f"""
+[THINKING]
+
+{response.additional_kwargs['reasoning_content']}
+
+[ANSWER]
+
+"""
+        content += response.content
+        response.content = content
+        return response
+
+    def handle_streaming_chunk(self, chunk: AIMessageChunk | str, previous_chunks: list[AIMessageChunk | str]) -> str:
+        if isinstance(chunk, str):
+            return chunk
+        mode = self.get_last_streaming_mode(previous_chunks)
+        output = self.format_streaming_chunk(chunk, mode)
+        return output
+
+    def get_last_streaming_mode(self, previous_chunks: list[AIMessageChunk | str]) -> str:
+        try:
+            last_chunk = previous_chunks[-1]
+            if 'reasoning_content' in last_chunk.additional_kwargs:
+                return "thinking"
+            return "text"
+        except Exception:
+            return "text"
