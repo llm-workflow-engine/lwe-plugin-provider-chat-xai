@@ -44,26 +44,50 @@ class ProviderChatXai(Provider):
             'grok-2-1212': {
                 'max_tokens': 131072,
             },
-            'grok-3-mini': {
+            'grok-3-mini-fast': {
                 'max_tokens': 131072,
             },
-            'grok-3-mini-beta': {
+            'grok-3-mini-fast-latest': {
                 'max_tokens': 131072,
             },
             'grok-3-mini-fast-beta': {
                 'max_tokens': 131072,
             },
-            'grok-3': {
+            'grok-3-fast': {
                 'max_tokens': 131072,
             },
-            'grok-3-beta': {
+            'grok-3-fast-latest': {
                 'max_tokens': 131072,
             },
             'grok-3-fast-beta': {
                 'max_tokens': 131072,
             },
-            'grok-beta': {
+            'grok-3-mini': {
                 'max_tokens': 131072,
+            },
+            'grok-3-mini-latest': {
+                'max_tokens': 131072,
+            },
+            'grok-3-mini-beta': {
+                'max_tokens': 131072,
+            },
+            'grok-3': {
+                'max_tokens': 131072,
+            },
+            'grok-3-latest': {
+                'max_tokens': 131072,
+            },
+            'grok-3-beta': {
+                'max_tokens': 131072,
+            },
+            'grok-4-0709': {
+                'max_tokens': 262144,
+            },
+            'grok-4-latest': {
+                'max_tokens': 262144,
+            },
+            'grok-4': {
+                'max_tokens': 262144,
             },
         }
 
