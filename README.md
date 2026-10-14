@@ -56,5 +56,5 @@ From a running LWE shell:
 
 ```
 /provider chat_xai
-/model model_name grok-3
+/model model_name grok-4.7
 ```
